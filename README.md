@@ -8,3 +8,6 @@ Tech used: HTML, CSS and JavaScript.
 
 WIP...
 
+
+### Inspiration for front-end
+The youtuber [codynn](https://www.youtube.com/@codynn) made a front-end typing tester which I have expanded upon.
