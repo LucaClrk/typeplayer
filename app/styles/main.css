@@ -122,47 +122,71 @@ body {
     border-radius: 12px;
     padding: 32px;
     margin-bottom: 32px;
-    font-size: 1.125rem;
+    font-size: 1.25rem;
     line-height: 1.8;
     font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
     position: relative;
-    min-height: 120px;
+    min-height: 150px;
+    max-height: 250px;
+    overflow: hidden;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
 }
 
 .text-content {
     width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+    transition: transform 0.3s ease;
 }
 
-.char {
-    position: relative;
-    transition: all 0.15s ease;
+.word {
+    display: inline-flex;
+    padding: 2px 4px;
+    border-radius: 4px;
 }
 
-.char.correct {
-    color: #ffffff;
-    background: rgba(34, 197, 94, 0.2);
+.word.current {
+    background: rgba(255, 255, 255, 0.05);
 }
 
-.char.incorrect {
-    color: #ffffff;
-    background: rgba(239, 68, 68, 0.3);
+.word.correct {
+    /* color: #22c55e; */
 }
 
-.char.current {
-    background: #ffffff;
-    color: #000000;
-    animation: pulse 1s infinite;
+.word.incorrect {
+    /* color: #ef4444; */
 }
 
-.char.pending {
+.letter {
     color: #666666;
+    position: relative;
 }
 
-@keyframes pulse {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0.7; }
+.letter.correct {
+    color: #ffffff;
+}
+
+.letter.incorrect {
+    color: #ef4444;
+}
+
+.letter.current {
+    /* color: #ffffff; */
+}
+
+#cursor {
+    position: absolute;
+    width: 2px;
+    background: #ffffff;
+    transition: all 0.1s ease;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
 }
 
 .input-section {
