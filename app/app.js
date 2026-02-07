@@ -22,6 +22,7 @@ const resultsModal = document.getElementById('resultsModal');
 const finalWpm = document.getElementById('finalWpm');
 const finalAccuracy = document.getElementById('finalAccuracy');
 const finalCharacters = document.getElementById('finalCharacters');
+const resultsMessage = document.getElementById('resultsMessage');
 const modalTryAgainBtn = document.getElementById('modalTryAgainBtn');
 const cursor = document.getElementById('cursor');
 function initGame() {
@@ -56,6 +57,7 @@ function initGame() {
     charactersDisplay.textContent = '0';
     progressFill.style.width = '0%';
     progressText.textContent = 'Ready to start';
+    textContent.parentElement.scrollTop = 0;
     updateCursor();
 }
 function startGame() {
@@ -91,9 +93,26 @@ function endGame() {
     clearInterval(timer);
     isGameRunning = false;
     typingInput.disabled = true;
-    finalWpm.textContent = wpmDisplay.textContent;
-    finalAccuracy.textContent = accuracyDisplay.textContent;
+    
+    const wpm = parseInt(wpmDisplay.textContent);
+    const accuracy = parseInt(accuracyDisplay.textContent);
+    
+    finalWpm.textContent = wpm;
+    finalAccuracy.textContent = accuracy;
     finalCharacters.textContent = charactersDisplay.textContent;
+    
+    let message = "";
+    if (wpm > 80) {
+        message = accuracy > 95 ? "Incredible! You're a typing god!" : "So fast! Work on that accuracy to be unstoppable.";
+    } else if (wpm > 50) {
+        message = accuracy > 90 ? "Great job! You have solid typing skills." : "Good speed, but try to focus more on accuracy.";
+    } else if (wpm > 30) {
+        message = "Keep practicing! You're getting there.";
+    } else {
+        message = "Don't give up! Every practice session makes you better.";
+    }
+    
+    resultsMessage.textContent = message;
     resultsModal.classList.add('active');
 }
 function updateCursor() {
@@ -104,14 +123,14 @@ function updateCursor() {
     if (currentLetter) {
         const rect = currentLetter.getBoundingClientRect();
         const containerRect = container.getBoundingClientRect();
-        cursor.style.top = `${rect.top - containerRect.top}px`;
+        cursor.style.top = `${rect.top - containerRect.top + container.scrollTop}px`;
         cursor.style.left = `${rect.left - containerRect.left}px`;
         cursor.style.height = `${rect.height}px`;
         cursor.style.display = 'block';
     } else if (currentWord) {
         const rect = currentWord.getBoundingClientRect();
         const containerRect = container.getBoundingClientRect();
-        cursor.style.top = `${rect.top - containerRect.top}px`;
+        cursor.style.top = `${rect.top - containerRect.top + container.scrollTop}px`;
         cursor.style.left = `${rect.right - containerRect.left}px`;
         cursor.style.height = `${rect.height}px`;
         cursor.style.display = 'block';
@@ -138,33 +157,40 @@ typingInput.addEventListener('input', (e) => {
         }
         currentWord.classList.remove('current');
         const nextWord = currentWord.nextElementSibling;
-        if (nextWord) {
-            nextWord.classList.add('current');
-            const currentLetter = currentWord.querySelector('.letter.current');
-            if (currentLetter) currentLetter.classList.remove('current');
-            nextWord.querySelector('.letter').classList.add('current');
-            typingInput.value = '';
-            if (nextWord.offsetTop > textContent.offsetHeight / 2) {
-                textContent.scrollTop = nextWord.offsetTop - textContent.offsetHeight / 2;
-            }
-        } else {
-            endGame();
+    if (nextWord) {
+        nextWord.classList.add('current');
+        const currentLetter = currentWord.querySelector('.letter.current');
+        if (currentLetter) currentLetter.classList.remove('current');
+        nextWord.querySelector('.letter').classList.add('current');
+        typingInput.value = '';
+
+        const container = textContent.parentElement;
+        const nextWordOffsetTop = nextWord.offsetTop;
+
+        if (nextWordOffsetTop > container.offsetHeight / 2) {
+            container.scrollTo({
+                top: nextWordOffsetTop - container.offsetHeight / 2,
+                behavior: 'smooth'
+            });
         }
     } else {
-        letters.forEach((letter, index) => {
-            letter.classList.remove('correct', 'incorrect', 'current');
-            if (index < typedValue.length) {
-                if (typedValue[index] === letter.textContent) {
-                    letter.classList.add('correct');
-                } else {
-                    letter.classList.add('incorrect');
-                }
-            }
-            if (index === typedValue.length) {
-                letter.classList.add('current');
-            }
-        });
+        endGame();
     }
+} else {
+    letters.forEach((letter, index) => {
+        letter.classList.remove('correct', 'incorrect', 'current');
+        if (index < typedValue.length) {
+            if (typedValue[index] === letter.textContent) {
+                letter.classList.add('correct');
+            } else {
+                letter.classList.add('incorrect');
+            }
+        }
+        if (index === typedValue.length) {
+            letter.classList.add('current');
+        }
+    });
+}
     updateCursor();
     updateStats();
 });
