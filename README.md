@@ -6,9 +6,10 @@ Typeplayer is a simple typing game that helps you improve your typing!
 
 Tech used: HTML, CSS and JavaScript. 
 
-WIP...
+For the moment you can view the webpage here [TypePlayer](https://typeplayer.netlify.app/)
 
 
 ### Inspiration
 The youtuber [codynn](https://www.youtube.com/@codynn) made a front-end typing tester which I have expanded upon.
+
 
