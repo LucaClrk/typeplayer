@@ -2,7 +2,7 @@ import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from './schema.js';
 
-const sql = neon(process.env.NETLIFY_DATABASE_URL);
+const sql = neon(process.env.NETLIFY_DATABASE_URL || "");
 export const db = drizzle(sql, { schema });
 
 export { users, scores } from "./schema.js";

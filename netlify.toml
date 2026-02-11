@@ -1,0 +1,8 @@
+[build]
+  base = "app"
+  publish = "."
+  functions = "netlify/functions"
+
+[functions]
+  node_bundle = true
+  external_node_modules = ["bcryptjs"]
