@@ -1,7 +1,7 @@
 import { neon } from '@neondatabase/serverless';
 
 export async function handler(event) {
-    const sql = neon(process.env);
+    const sql = neon(process.env.NETLIFY_DATABASE_URL);
 
     try {
         const result = await sql`SELECT NOW()`;
