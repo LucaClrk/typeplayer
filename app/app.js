@@ -25,6 +25,31 @@ const finalCharacters = document.getElementById('finalCharacters');
 const resultsMessage = document.getElementById('resultsMessage');
 const modalTryAgainBtn = document.getElementById('modalTryAgainBtn');
 const cursor = document.getElementById('cursor');
+
+// Auth State
+let currentUser = JSON.parse(localStorage.getItem('user'));
+let authToken = localStorage.getItem('token');
+
+// Auth Elements
+const authButtons = document.getElementById('authButtons');
+const userProfile = document.getElementById('userProfile');
+const userEmail = document.getElementById('userEmail');
+const loginBtn = document.getElementById('loginBtn');
+const signupBtn = document.getElementById('signupBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+const authModal = document.getElementById('authModal');
+const authForm = document.getElementById('authForm');
+const authModalTitle = document.getElementById('authModalTitle');
+const authSubmitBtn = document.getElementById('authSubmitBtn');
+const authError = document.getElementById('authError');
+const closeAuthModal = document.getElementById('closeAuthModal');
+const profileTrigger = document.getElementById('profileTrigger');
+const viewScoresBtn = document.getElementById('viewScoresBtn');
+const scoresModal = document.getElementById('scoresModal');
+const scoresList = document.getElementById('scoresList');
+const closeScoresModal = document.getElementById('closeScoresModal');
+
+let authMode = 'login'; // 'login' or 'signup'
 function initGame() {
     textContent.innerHTML = '';
     const shuffledWords = [...wordsArray].sort(() => Math.random() - 0.5).slice(0, 100);
@@ -114,6 +139,10 @@ function endGame() {
     
     resultsMessage.textContent = message;
     resultsModal.classList.add('active');
+
+    if (currentUser) {
+        saveScore(wpm, accuracy);
+    }
 }
 function updateCursor() {
     const currentWord = textContent.querySelector('.word.current');
@@ -205,3 +234,132 @@ modalTryAgainBtn.addEventListener('click', () => {
 });
 initGame();
 window.addEventListener('resize', updateCursor);
+
+// Auth Functions
+function updateAuthUI() {
+    if (currentUser) {
+        authButtons.classList.add('hidden');
+        userProfile.classList.remove('hidden');
+        profileTrigger.classList.remove('hidden');
+        userEmail.textContent = currentUser.email;
+    } else {
+        authButtons.classList.remove('hidden');
+        userProfile.classList.add('hidden');
+        profileTrigger.classList.add('hidden');
+    }
+}
+
+function openAuth(mode) {
+    authMode = mode;
+    authModalTitle.textContent = mode === 'login' ? 'Login' : 'Sign Up';
+    authSubmitBtn.textContent = mode === 'login' ? 'Login' : 'Sign Up';
+    authError.classList.add('hidden');
+    authModal.classList.add('active');
+}
+
+async function handleAuth(e) {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    authError.classList.add('hidden');
+    authSubmitBtn.disabled = true;
+
+    try {
+        const response = await fetch(`/.netlify/functions/${authMode}`, {
+            method: 'POST',
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            if (authMode === 'signup') {
+                authMode = 'login';
+                authModalTitle.textContent = 'Login';
+                authSubmitBtn.textContent = 'Login';
+                authError.textContent = 'Account created! Please login.';
+                authError.classList.remove('hidden');
+                authError.style.color = '#22c55e';
+            } else {
+                currentUser = data.user;
+                authToken = data.token;
+                localStorage.setItem('user', JSON.stringify(currentUser));
+                localStorage.setItem('token', authToken);
+                updateAuthUI();
+                authModal.classList.remove('active');
+            }
+        } else {
+            authError.textContent = data.error || 'Authentication failed';
+            authError.classList.remove('hidden');
+            authError.style.color = '#ef4444';
+        }
+    } catch (error) {
+        authError.textContent = 'An error occurred. Please try again.';
+        authError.classList.remove('hidden');
+    } finally {
+        authSubmitBtn.disabled = false;
+    }
+}
+
+async function saveScore(wpm, accuracy) {
+    try {
+        await fetch('/.netlify/functions/save-score', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${authToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ wpm, accuracy })
+        });
+    } catch (error) {
+        console.error('Failed to save score:', error);
+    }
+}
+
+async function loadScores() {
+    scoresList.innerHTML = '<div class="progress-text">Loading scores...</div>';
+    scoresModal.classList.add('active');
+
+    try {
+        const response = await fetch('/.netlify/functions/get-scores', {
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+        });
+        const scores = await response.json();
+
+        if (scores.length === 0) {
+            scoresList.innerHTML = '<div class="progress-text">No scores yet. Keep typing!</div>';
+            return;
+        }
+
+        scoresList.innerHTML = scores.map(score => `
+            <div class="score-item">
+                <div class="score-date">${new Date(score.created_at).toLocaleDateString()}</div>
+                <div class="score-stats">
+                    <span class="score-wpm">${score.wpm} WPM</span>
+                    <span class="score-acc">${score.accuracy}% ACC</span>
+                </div>
+            </div>
+        `).join('');
+    } catch (error) {
+        scoresList.innerHTML = '<div class="error-message">Failed to load scores.</div>';
+    }
+}
+
+// Event Listeners for Auth
+loginBtn.addEventListener('click', () => openAuth('login'));
+signupBtn.addEventListener('click', () => openAuth('signup'));
+closeAuthModal.addEventListener('click', () => authModal.classList.remove('active'));
+authForm.addEventListener('submit', handleAuth);
+logoutBtn.addEventListener('click', () => {
+    currentUser = null;
+    authToken = null;
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    updateAuthUI();
+});
+viewScoresBtn.addEventListener('click', loadScores);
+closeScoresModal.addEventListener('click', () => scoresModal.classList.remove('active'));
+
+updateAuthUI();
