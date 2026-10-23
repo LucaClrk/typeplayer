@@ -18,5 +18,7 @@ open app/index.html
 - `backspace`: delete a character, `option+backspace` / `ctrl+backspace`: delete a word
 - `tab`: restart at any time, `enter`: go again after the results
 
+Your last score is kept in this browser (localStorage), so the results show whether you did better or worse than last time.
+
 ### Inspiration
 The youtuber [codynn](https://www.youtube.com/@codynn) made a front-end typing tester which the first version expanded upon.

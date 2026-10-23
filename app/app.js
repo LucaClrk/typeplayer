@@ -11,6 +11,7 @@ const WORDS = (
     'group play stand early course change help line city light night water read music story party'
 ).split(' ');
 const WORD_COUNT = 30;
+const LAST_SCORE_KEY = 'typeplayer.lastScore';
 
 const textEl = document.getElementById('text');
 const statusEl = document.getElementById('status');
@@ -38,7 +39,9 @@ function newTest() {
     finished = false;
     resultsEl.hidden = true;
     statusEl.hidden = false;
-    statusEl.textContent = 'start typing to begin. tab restarts.';
+    const last = loadLastScore();
+    statusEl.textContent = (last ? `last run: ${last.wpm} wpm, ${last.accuracy}% accuracy. ` : '') +
+        'start typing to begin. tab restarts.';
     render();
 }
 
@@ -78,17 +81,48 @@ function updateStatus() {
     statusEl.textContent = `${Math.floor(seconds)}s  ${wpm(correctChars(), seconds)} wpm  ${wordsDone}/${WORD_COUNT} words`;
 }
 
+// The last score lives in localStorage, so it survives reloads in this browser.
+// Storage can be blocked (private windows, strict settings); the test still works without it.
+function loadLastScore() {
+    try {
+        const score = JSON.parse(localStorage.getItem(LAST_SCORE_KEY));
+        return Number.isFinite(score?.wpm) && Number.isFinite(score?.accuracy) ? score : null;
+    } catch {
+        return null;
+    }
+}
+
+function saveLastScore(score) {
+    try {
+        localStorage.setItem(LAST_SCORE_KEY, JSON.stringify(score));
+    } catch {
+        // Not saved; nothing else depends on it.
+    }
+}
+
+function versusLast(now, before, unit) {
+    if (before === undefined) return '';
+    const diff = now - before;
+    if (diff === 0) return `<span class="dim">same as last</span>`;
+    const sign = diff > 0 ? '+' : '';
+    return `<span class="${diff > 0 ? 'up' : 'bad'}">${sign}${diff}${unit}</span>` +
+        ` <span class="dim">vs last (${before}${unit})</span>`;
+}
+
 function finish() {
     finished = true;
     clearInterval(ticker);
     const seconds = elapsedSeconds();
     const correct = correctChars();
+    const speed = wpm(correct, seconds);
     const accuracy = Math.round(100 * (keystrokes - mistakes) / keystrokes);
+    const last = loadLastScore();
+    saveLastScore({ wpm: speed, accuracy });
     statusEl.hidden = true;
     resultsEl.innerHTML =
-        `wpm       ${wpm(correct, seconds)}\n` +
+        `wpm       ${String(speed).padEnd(6)}${versusLast(speed, last?.wpm, '')}\n` +
         `raw       ${wpm(typed.length, seconds)}\n` +
-        `accuracy  ${accuracy}%\n` +
+        `accuracy  ${`${accuracy}%`.padEnd(6)}${versusLast(accuracy, last?.accuracy, '%')}\n` +
         `time      ${seconds.toFixed(1)}s\n` +
         `chars     ${correct} correct, ${typed.length - correct} wrong\n` +
         `typos     ${mistakes}\n` +

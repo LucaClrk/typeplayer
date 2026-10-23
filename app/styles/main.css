@@ -5,6 +5,7 @@
     --dim: #5a5a5a;
     --red: #ff5f5f;
     --red-bg: #5c1f1f;
+    --green: #5fd75f;
 }
 
 html, body {
@@ -39,6 +40,7 @@ p, pre {
 .ok { color: var(--bright); }
 .bad { color: var(--red); }
 .bad.space { background: var(--red-bg); }
+.up { color: var(--green); }
 
 .cursor {
     background: var(--bright);
