@@ -30,8 +30,27 @@ p, pre {
 
 .dim { color: var(--dim); }
 
-/* Line breaks only happen at the space spans, so words never split across lines. */
+#status { white-space: pre-wrap; }
+
+/* Plain-text toggle: [30s] is selected, 60s is not. */
+button {
+    font: inherit;
+    white-space: pre;
+    color: var(--dim);
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+}
+button:hover { color: var(--fg); }
+button[aria-pressed="true"] { color: var(--bright); }
+
+/* Three visible lines; app.js scrolls finished lines out of view.
+   Line breaks only happen at the space spans, so words never split across lines. */
 .text {
+    position: relative;
+    height: 4.5em;
+    overflow: hidden;
     margin: 1.5em 0;
     white-space: pre-wrap;
 }
