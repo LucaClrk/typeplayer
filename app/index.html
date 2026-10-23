@@ -3,149 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TypePlayer - Simple Typing Game</title>
-    <link rel="stylesheet" href="./assets/fontawesome/css/all.min.css">
+    <title>typeplayer</title>
     <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/auth.css">
-
 </head>
 <body>
-<div class="timer" id="timer">
-    <i class="fa-solid fa-clock"></i>
-    <span>60</span>
-</div>
-
-<!--<div class="auth-buttons" id="authButtons">-->
-<!--    <button class="btn btn-secondary" id="loginBtn">Login</button>-->
-<!--    <button class="btn btn-primary" id="signupBtn">Sign Up</button>-->
-<!--</div>-->
-
-<!--<div class="user-profile hidden" id="userProfile">-->
-<!--    <span id="userEmail"></span>-->
-<!--    <button class="btn btn-secondary btn-sm" id="logoutBtn">Logout</button>-->
-<!--</div>-->
-
-<div class="container">
-    <div class="header">
-        <h1 class="title">TypePlayer</h1>
-        <p class="subtitle">test your typing skills and challenge your friends</p>
-    </div>
-
-    <div class="stats-grid">
-        <div class="stat-card">
-            <i class="fa-solid fa-gauge-high stat-icon"></i>
-            <div class="stat-value" id="wpm">0</div>
-            <div class="stat-label">WPM</div>
-        </div>
-        <div class="stat-card">
-            <i class="fa-solid fa-bullseye stat-icon"></i>
-            <div class="stat-value" id="accuracy">100</div>
-            <div class="stat-label">Accuracy</div>
-        </div>
-        <div class="stat-card">
-            <i class="fa-solid fa-keyboard stat-icon"></i>
-            <div class="stat-value" id="characters">0</div>
-            <div class="stat-label">Characters</div>
-        </div>
-    </div>
-
-    <div class="progress-container">
-        <div class="progress-bar">
-            <div class="progress-fill" id="progressFill"></div>
-        </div>
-        <div class="progress-text" id="progressText">Ready to start</div>
-    </div>
-
-    <div class="text-container">
-        <div class="text-content" id="textContent"></div>
-        <div id="cursor"></div>
-    </div>
-
-    <div class="input-section">
-        <input
-                type="text"
-                class="typing-input"
-                id="typingInput"
-                placeholder="Click start to begin typing..."
-                disabled
-                autocomplete="off"
-                spellcheck="false"
-        >
-    </div>
-
-    <div class="controls">
-        <button class="btn btn-primary" id="startBtn">
-            <i class="fa-solid fa-play"></i>
-            Start Test
-        </button>
-        <button class="btn btn-secondary" id="resetBtn">
-            <i class="fa-solid fa-rotate-right"></i>
-            Reset
-        </button>
-    </div>
-</div>
-
-<div class="results-modal" id="resultsModal">
-    <div class="results-content">
-        <h2 class="results-title">Test Complete!</h2>
-        <div class="results-stats">
-            <div class="results-stat">
-                <div class="results-stat-value" id="finalWpm">0</div>
-                <div class="results-stat-label">WPM</div>
-            </div>
-            <div class="results-stat">
-                <div class="results-stat-value" id="finalAccuracy">100</div>
-                <div class="results-stat-label">Accuracy</div>
-            </div>
-            <div class="results-stat">
-                <div class="results-stat-value" id="finalCharacters">0</div>
-                <div class="results-stat-label">Characters</div>
-            </div>
-        </div>
-        <p id="resultsMessage" class="results-message"></p>
-        <button class="btn btn-primary" id="modalTryAgainBtn">
-            <i class="fa-solid fa-rotate-right"></i>
-            Try Again
-        </button>
-    </div>
-</div>
-
-<div class="modal" id="authModal">
-    <div class="modal-content">
-        <h2 id="authModalTitle">Login</h2>
-        <form id="authForm">
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" required>
-            </div>
-            <p id="authError" class="error-message hidden"></p>
-            <button type="submit" class="btn btn-primary w-full" id="authSubmitBtn">Login</button>
-        </form>
-        <button class="btn-close" id="closeAuthModal">&times;</button>
-    </div>
-</div>
-
-<div class="modal" id="scoresModal">
-    <div class="modal-content">
-        <h2>Your Progress</h2>
-        <div id="scoresList" class="scores-list">
-            <!-- Scores will be loaded here -->
-        </div>
-        <button class="btn-close" id="closeScoresModal">&times;</button>
-    </div>
-</div>
-
-<div class="profile-trigger hidden" id="profileTrigger">
-    <button class="btn btn-secondary" id="viewScoresBtn">
-        <i class="fa-solid fa-chart-line"></i>
-        My Progress
-    </button>
-</div>
-
+<main class="tty">
+    <p class="dim">typeplayer (tty1)</p>
+    <br>
+    <p>[guest@arch ~]$ typeplayer --words <span id="wordCount"></span></p>
+    <p class="text" id="text"></p>
+    <p class="dim" id="status"></p>
+    <pre id="results" role="status" hidden></pre>
+</main>
 <script src="app.js"></script>
 </body>
 </html>
